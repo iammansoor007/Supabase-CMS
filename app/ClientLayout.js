@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import QuickQuote from './components/QuickQuote';
-import SmoothScroll from './components/SmoothScroll'; // Import SmoothScroll
+import SmoothScroll from './components/SmoothScroll';
+import { AuthProvider } from './AuthProvider'; // Import AuthProvider
 
 export default function ClientLayout({ children }) {
     const pathname = usePathname();
@@ -29,6 +30,8 @@ export default function ClientLayout({ children }) {
     }, []);
 
     const isAdmin = pathname?.startsWith('/admin');
+    
+    // If admin route, just render children without extra layout
     if (isAdmin) {
         return (
             <main className="min-h-screen bg-gray-950">
@@ -37,8 +40,9 @@ export default function ClientLayout({ children }) {
         );
     }
 
+    // For public routes, wrap with AuthProvider
     return (
-        <>
+        <AuthProvider>
             {/* STABLE SNOWFALL - Never changes */}
             {isClient && (
                 <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden"
@@ -61,19 +65,15 @@ export default function ClientLayout({ children }) {
                 </div>
             )}
 
-            {/* STABLE COMPONENTS - These NEVER re-render on navigation */}
             <Navbar />
             <QuickQuote />
-
-            {/* SMOOTH SCROLL WRAPPER - Added here */}
+            
             <SmoothScroll>
-                {/* PAGE CONTENT - ONLY this changes during navigation */}
                 <main className="min-h-screen">
                     {children}
                 </main>
             </SmoothScroll>
 
-            {/* STABLE FOOTER - Never changes */}
             <Footer />
 
             <style jsx global>{`
@@ -95,6 +95,6 @@ export default function ClientLayout({ children }) {
                     }
                 }
             `}</style>
-        </>
+        </AuthProvider>
     );
 }

@@ -7,9 +7,6 @@ import {
 } from 'react-icons/fa';
 import { GiSparkles } from 'react-icons/gi';
 
-// Import your data
-import data from '../../public/data.json';
-
 // Map icon strings to actual components
 const iconMap = {
   FaStar, FaHome, FaShieldAlt, FaHeart, FaCalendarCheck, FaPhoneAlt,
@@ -24,50 +21,126 @@ export const getIconComponent = (iconName) => {
   return iconMap[iconName] || FaCheckCircle;
 };
 
-// Data fetching functions
+// Default fallback data
+const defaultData = {
+  hero: {
+    stats: []
+  },
+  services: {
+    items: []
+  },
+  howWeWork: {
+    steps: []
+  },
+  faq: {
+    items: []
+  },
+  workShowcase: {},
+  cta: {},
+  contact: {}
+};
+
+// Safely load data with error handling
+let appData = defaultData;
+try {
+  // Try to import the data, but don't crash if it fails
+  const dataModule = require('../../public/data.json');
+  appData = dataModule.default || dataModule || defaultData;
+} catch (error) {
+  console.warn('Could not load data.json, using default data');
+  // Use default data
+}
+
+// Data fetching functions with safe access
 export const getHeroData = () => {
-  const heroData = data.hero;
-  // Map icons in stats
-  heroData.stats = heroData.stats.map(stat => ({
-    ...stat,
-    icon: getIconComponent(stat.icon)
-  }));
-  return heroData;
+  try {
+    const heroData = appData.hero || defaultData.hero;
+    // Map icons in stats safely
+    heroData.stats = (heroData.stats || []).map(stat => ({
+      ...stat,
+      icon: getIconComponent(stat.icon)
+    }));
+    return heroData;
+  } catch (error) {
+    console.warn('Error in getHeroData:', error);
+    return defaultData.hero;
+  }
 };
 
 export const getServicesData = () => {
-  const servicesData = data.services;
-  // Map icons in items
-  servicesData.items = servicesData.items.map(item => ({
-    ...item,
-    icon: getIconComponent(item.icon)
-  }));
-  return servicesData;
+  try {
+    const servicesData = appData.services || defaultData.services;
+    // Map icons in items safely
+    servicesData.items = (servicesData.items || []).map(item => ({
+      ...item,
+      icon: getIconComponent(item.icon)
+    }));
+    return servicesData;
+  } catch (error) {
+    console.warn('Error in getServicesData:', error);
+    return defaultData.services;
+  }
 };
 
 export const getHowWeWorkData = () => {
-  const workData = data.howWeWork;
-  // Map icons in steps
-  workData.steps = workData.steps.map(step => ({
-    ...step,
-    icon: getIconComponent(step.icon)
-  }));
-  return workData;
+  try {
+    const workData = appData.howWeWork || defaultData.howWeWork;
+    // Map icons in steps safely
+    workData.steps = (workData.steps || []).map(step => ({
+      ...step,
+      icon: getIconComponent(step.icon)
+    }));
+    return workData;
+  } catch (error) {
+    console.warn('Error in getHowWeWorkData:', error);
+    return defaultData.howWeWork;
+  }
 };
 
 export const getFAQData = () => {
-  const faqData = data.faq;
-  // Map icons in items
-  faqData.items = faqData.items.map(item => ({
-    ...item,
-    icon: getIconComponent(item.icon)
-  }));
-  return faqData;
+  try {
+    const faqData = appData.faq || defaultData.faq;
+    // Map icons in items safely
+    faqData.items = (faqData.items || []).map(item => ({
+      ...item,
+      icon: getIconComponent(item.icon)
+    }));
+    return faqData;
+  } catch (error) {
+    console.warn('Error in getFAQData:', error);
+    return defaultData.faq;
+  }
 };
 
-export const getWorkShowcaseData = () => data.workShowcase;
-export const getCTAData = () => data.cta;
-export const getContactData = () => data.contact;
+export const getWorkShowcaseData = () => {
+  try {
+    return appData.workShowcase || defaultData.workShowcase;
+  } catch (error) {
+    return defaultData.workShowcase;
+  }
+};
+
+export const getCTAData = () => {
+  try {
+    return appData.cta || defaultData.cta;
+  } catch (error) {
+    return defaultData.cta;
+  }
+};
+
+export const getContactData = () => {
+  try {
+    return appData.contact || defaultData.contact;
+  } catch (error) {
+    return defaultData.contact;
+  }
+};
 
 // Get all data
-export const getAllData = () => data;
+export const getAllData = () => {
+  try {
+    return appData;
+  } catch (error) {
+    return defaultData;
+  }
+};
