@@ -11,6 +11,7 @@ import { AuthProvider } from './AuthProvider'; // Import AuthProvider
 export default function ClientLayout({ children }) {
     const pathname = usePathname();
     const [isClient, setIsClient] = useState(false);
+    const [isAdminRoute, setIsAdminRoute] = useState(false);
     const [snowflakes] = useState(() => {
         const flakes = [];
         for (let i = 0; i < 120; i++) {
@@ -27,12 +28,12 @@ export default function ClientLayout({ children }) {
 
     useEffect(() => {
         setIsClient(true);
+        // Check if we're on an admin route
+        setIsAdminRoute(window.location.pathname.startsWith('/admin'));
     }, []);
 
-    const isAdmin = pathname?.startsWith('/admin');
-    
-    // If admin route, just render children without extra layout
-    if (isAdmin) {
+    // If admin route, just render children with minimal layout
+    if (pathname?.startsWith('/admin') || isAdminRoute) {
         return (
             <main className="min-h-screen bg-gray-950">
                 {children}
@@ -40,7 +41,7 @@ export default function ClientLayout({ children }) {
         );
     }
 
-    // For public routes, wrap with AuthProvider
+    // For public routes, render full layout with AuthProvider
     return (
         <AuthProvider>
             {/* STABLE SNOWFALL - Never changes */}

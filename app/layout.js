@@ -1,3 +1,10 @@
+if (typeof window === 'undefined') {
+  // This runs on server only
+  require('react');
+}
+
+
+
 import { Montserrat } from 'next/font/google';
 import './globals.css';
 import ClientLayout from './ClientLayout';
